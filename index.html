@@ -111,7 +111,7 @@
   }
 
   header{
-    display:flex; flex-direction:row; align-items:center; justify-content:space-between;
+    display:flex; flex-direction:row; flex-wrap:wrap; align-items:center; justify-content:space-between;
     gap:12px; margin-bottom: 4vh;
   }
   .logo{ height:26px; width:auto; flex-shrink:0; filter: drop-shadow(0 0 10px rgba(255,189,59,.35)) }
@@ -125,6 +125,42 @@
   .meta .dot{ flex-shrink:0 }
   .dot{ width:8px; height:8px; border-radius:50%; background:var(--green); box-shadow:0 0 12px var(--green); animation: pulse 1.4s ease-in-out infinite }
   @keyframes pulse{ 50%{ opacity:.35; transform:scale(.7) } }
+
+  .nav{
+    display:flex; align-items:center;
+    order:3; flex-basis:100%;
+    justify-content:center;
+    margin-top:6px;
+  }
+  .nav-link{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:700;
+    font-size:11px;
+    letter-spacing:.28em;
+    text-transform:uppercase;
+    color:var(--green);
+    text-decoration:none;
+    padding:6px 12px;
+    border:1px solid rgba(182,255,87,.55);
+    background: rgba(182,255,87,.06);
+    text-shadow: 0 0 8px rgba(182,255,87,.55);
+    transition: background .15s ease, color .15s ease, box-shadow .15s ease, transform .15s ease;
+  }
+  .nav-link .nav-arrow{
+    font-family:'VT323', monospace;
+    font-size:14px;
+    color:var(--purple);
+    text-shadow: 0 0 8px rgba(207,157,255,.6);
+  }
+  .nav-link:hover,
+  .nav-link:focus-visible{
+    background: rgba(182,255,87,.14);
+    color:#fff;
+    box-shadow: 0 0 18px rgba(182,255,87,.35);
+    outline:none;
+    transform: translateY(-1px);
+  }
 
   .hero{
     flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -444,7 +480,10 @@
   /* ===== Enhancements for larger screens ===== */
   @media (min-width: 680px){
     .page{ padding: 28px clamp(20px, 4vw, 56px) 80px }
-    header{ flex-direction:row; align-items:center; gap:24px; margin-bottom:6vh }
+    header{ flex-direction:row; flex-wrap:nowrap; align-items:center; gap:24px; margin-bottom:6vh }
+    .nav{ order:0; flex-basis:auto; margin-top:0; flex:1; justify-content:flex-end }
+    .nav-link{ font-size:12px; padding:8px 14px }
+    .meta{ margin-left:8px }
     .logo{ height:34px }
     .meta{ font-size:20px; letter-spacing:.1em; gap:18px }
     .hero{ gap:22px; padding: 2vh 0 4vh }
@@ -474,6 +513,11 @@
   <div class="page">
     <header>
       <img class="logo" src="assets/economic-logo.png" alt="e-conomic"/>
+      <nav class="nav">
+        <a class="nav-link" href="hackthon-game.html">
+          <span class="nav-arrow">&#9656;</span>WOOK&rsquo;S CORNER
+        </a>
+      </nav>
       <div class="meta">
         <span class="dot"></span>
         <span>TRANSMISSION // 2001 &rArr; 2026</span>
