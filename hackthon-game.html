@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Hack Lab — The Little CTO</title>
+<title>Wook's Corner — Hack Lab</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
@@ -43,8 +43,8 @@
 </style>
 </head>
 <body>
-  <h1>◆ HACK LAB ◆</h1>
-  <div class="subtitle">The Little CTO grabs ideas at the accountant office</div>
+  <h1>◆ WOOK&rsquo;S CORNER ◆</h1>
+  <div class="subtitle">Help Wook grab 5 good ideas at the accountant office</div>
   <canvas id="game" width="960" height="480"></canvas>
   <div class="controls">
     <span>←</span><span>→</span> Move &nbsp;·&nbsp;
@@ -61,6 +61,11 @@ const H = canvas.height;
 const GRAVITY = 0.6;
 const FRICTION = 0.82;
 const GROUND_Y = H - 64;
+const WIN_IDEAS = 5;
+const CONFETTI_COLORS = [
+  [255, 77, 109], [255, 179, 0], [255, 224, 102],
+  [82, 240, 125], [74, 214, 255], [199, 125, 255], [255, 255, 255]
+];
 
 const LEVEL_WIDTH = 3600;
 
@@ -379,13 +384,13 @@ function drawPlayer(t) {
     ctx.fillRect(x + 11, y + 9, 2, 2);
   }
 
-  // CTO badge
+  // WOOK badge
   ctx.fillStyle = '#ffd700';
-  ctx.fillRect(x + 4, y + 26, 10, 6);
+  ctx.fillRect(x + 2, y + 26, 14, 6);
   ctx.fillStyle = '#000';
   ctx.font = 'bold 7px Courier New';
   ctx.textAlign = 'center';
-  ctx.fillText('CTO', x + 9, y + 31);
+  ctx.fillText('WOOK', x + 9, y + 31);
 
   // Legs (animated run)
   const running = player.onGround && Math.abs(player.vx) > 0.5;
@@ -420,7 +425,7 @@ function drawHUD() {
   ctx.fillText('SCORE: ' + score, 22, 34);
   ctx.fillStyle = '#fff59d';
   ctx.font = '13px Courier New';
-  ctx.fillText('IDEAS: ' + ideasCollected + ' / ' + ideas.length, 22, 54);
+  ctx.fillText('IDEAS: ' + Math.min(ideasCollected, WIN_IDEAS) + ' / ' + WIN_IDEAS, 22, 54);
 
   // Speed boost indicator
   if (speedBoostTime > 0) {
@@ -437,17 +442,31 @@ function drawHUD() {
   }
 
   if (gameWon) {
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.75)';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.65)';
     ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = '#ffd700';
-    ctx.font = 'bold 48px Courier New';
+    // YOU WIN! — big rainbow banner
     ctx.textAlign = 'center';
-    ctx.fillText('HACK LAB CLEARED!', W/2, H/2 - 30);
+    ctx.font = 'bold 72px Courier New';
+    const msg = 'YOU WIN!';
+    const winColors = ['#ff4d6d','#ffb300','#ffe066','#52f07d','#4ad6ff','#c77dff'];
+    for (let i = 0; i < msg.length; i++) {
+      ctx.fillStyle = winColors[i % winColors.length];
+      const ch = msg[i];
+      const totalW = ctx.measureText(msg).width;
+      const startX = W/2 - totalW/2;
+      const charX = startX + ctx.measureText(msg.slice(0, i)).width + ctx.measureText(ch).width/2;
+      const bob = Math.sin(Date.now()/200 + i) * 6;
+      ctx.fillText(ch, charX, H/2 - 40 + bob);
+    }
+    ctx.fillStyle = '#fff59d';
+    ctx.font = 'bold 24px Courier New';
+    ctx.fillText('Wook grabbed 5 good ideas!', W/2, H/2 + 20);
     ctx.fillStyle = '#fff';
-    ctx.font = '22px Courier New';
-    ctx.fillText('Final Score: ' + score, W/2, H/2 + 10);
+    ctx.font = '20px Courier New';
+    ctx.fillText('Final Score: ' + score, W/2, H/2 + 56);
+    ctx.fillStyle = '#ddd';
     ctx.font = '14px Courier New';
-    ctx.fillText('Press R to play again', W/2, H/2 + 50);
+    ctx.fillText('Press R to play again', W/2, H/2 + 90);
   }
 }
 
@@ -463,6 +482,34 @@ function spawnParticles(x, y, r, g, b, count) {
       maxLife: 30
     });
   }
+}
+
+function spawnConfettiBurst(x, y, count) {
+  for (let i = 0; i < count; i++) {
+    const c = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+    particles.push({
+      x, y,
+      vx: (Math.random() - 0.5) * 14,
+      vy: -Math.random() * 10 - 3,
+      size: 3 + Math.random() * 5,
+      r: c[0], g: c[1], b: c[2],
+      life: 140 + Math.random() * 80,
+      maxLife: 220
+    });
+  }
+}
+
+function spawnConfettiRain() {
+  const c = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+  particles.push({
+    x: camera.x + Math.random() * W,
+    y: -10,
+    vx: (Math.random() - 0.5) * 2,
+    vy: 1 + Math.random() * 2,
+    size: 3 + Math.random() * 4,
+    r: c[0], g: c[1], b: c[2],
+    life: 260, maxLife: 260
+  });
 }
 
 function updateParticles() {
@@ -482,7 +529,12 @@ function rectsOverlap(a, b) {
 }
 
 function update() {
-  if (gameWon) return;
+  if (gameWon) {
+    // Keep the party going: confetti rain + particle physics
+    for (let i = 0; i < 3; i++) spawnConfettiRain();
+    updateParticles();
+    return;
+  }
 
   const boosted = speedBoostTime > 0;
   const maxSpeed = boosted ? 8.5 : 5;
@@ -563,9 +615,11 @@ function update() {
       score += 100;
       ideasCollected++;
       spawnParticles(idea.x, idea.y, 255, 235, 100, 12);
-      if (ideasCollected === ideas.length) {
+      if (ideasCollected >= WIN_IDEAS && !gameWon) {
         gameWon = true;
         score += 500;
+        // Big celebratory confetti burst around Wook
+        spawnConfettiBurst(player.x + player.w/2, player.y + player.h/2, 120);
       }
     }
   }
