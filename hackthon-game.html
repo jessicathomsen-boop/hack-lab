@@ -222,23 +222,29 @@ function resetGame() {
   speedBoostTime = 0;
   particles = [];
 
-  // Platforms (desks, filing cabinets, shelves to jump on)
+  // Platforms — all idea platforms are placed above normal jump reach (~110px),
+  // so they require the AI boost (~141px reach) to land on from the ground.
+  // Each "section" is 3 platforms the boosted player can chain through.
   platforms = [
-    { x: 280,  y: GROUND_Y - 90,  w: 120, h: 18 },
-    { x: 480,  y: GROUND_Y - 150, w: 100, h: 18 },
-    { x: 680,  y: GROUND_Y - 90,  w: 140, h: 18 },
-    { x: 920,  y: GROUND_Y - 160, w: 90,  h: 18 },
-    { x: 1100, y: GROUND_Y - 100, w: 120, h: 18 },
-    { x: 1320, y: GROUND_Y - 170, w: 110, h: 18 },
-    { x: 1520, y: GROUND_Y - 110, w: 140, h: 18 },
-    { x: 1760, y: GROUND_Y - 180, w: 100, h: 18 },
-    { x: 1960, y: GROUND_Y - 100, w: 120, h: 18 },
-    { x: 2180, y: GROUND_Y - 160, w: 130, h: 18 },
-    { x: 2400, y: GROUND_Y - 110, w: 110, h: 18 },
-    { x: 2620, y: GROUND_Y - 180, w: 120, h: 18 },
-    { x: 2860, y: GROUND_Y - 130, w: 140, h: 18 },
-    { x: 3100, y: GROUND_Y - 200, w: 110, h: 18 },
-    { x: 3300, y: GROUND_Y - 120, w: 160, h: 18 },
+    // Section A (coin at x=180)
+    { x: 320,  y: GROUND_Y - 130, w: 80, h: 18 },
+    { x: 500,  y: GROUND_Y - 140, w: 80, h: 18 },
+    { x: 680,  y: GROUND_Y - 130, w: 80, h: 18 },
+    // Section B (coin at x=880)
+    { x: 1020, y: GROUND_Y - 135, w: 80, h: 18 },
+    { x: 1200, y: GROUND_Y - 150, w: 80, h: 18 },
+    { x: 1380, y: GROUND_Y - 135, w: 80, h: 18 },
+    // Section C (coin at x=1600)
+    { x: 1720, y: GROUND_Y - 130, w: 80, h: 18 },
+    { x: 1900, y: GROUND_Y - 140, w: 80, h: 18 },
+    { x: 2080, y: GROUND_Y - 130, w: 80, h: 18 },
+    // Section D (coin at x=2300)
+    { x: 2420, y: GROUND_Y - 135, w: 80, h: 18 },
+    { x: 2600, y: GROUND_Y - 150, w: 80, h: 18 },
+    { x: 2780, y: GROUND_Y - 135, w: 80, h: 18 },
+    // Section E (coin at x=3000)
+    { x: 3120, y: GROUND_Y - 130, w: 80, h: 18 },
+    { x: 3300, y: GROUND_Y - 140, w: 80, h: 18 },
   ];
 
   // Decorative desks along ground
@@ -254,34 +260,40 @@ function resetGame() {
     { x: 3400, w: 70 },
   ];
 
-  // Ideas (lightbulbs) - most are on platforms
+  // Ideas (lightbulbs) — one hovering above each boost-only platform.
+  // No ground-level ideas: all 14 require the AI booster to reach.
   ideas = [
-    { x: 320, y: GROUND_Y - 125, got: false },
-    { x: 520, y: GROUND_Y - 185, got: false },
-    { x: 720, y: GROUND_Y - 125, got: false },
-    { x: 950, y: GROUND_Y - 195, got: false },
-    { x: 1140, y: GROUND_Y - 135, got: false },
-    { x: 1350, y: GROUND_Y - 205, got: false },
-    { x: 1570, y: GROUND_Y - 145, got: false },
-    { x: 1790, y: GROUND_Y - 215, got: false },
-    { x: 2000, y: GROUND_Y - 135, got: false },
-    { x: 2230, y: GROUND_Y - 195, got: false },
-    { x: 2450, y: GROUND_Y - 145, got: false },
-    { x: 2670, y: GROUND_Y - 215, got: false },
-    { x: 2910, y: GROUND_Y - 165, got: false },
-    { x: 3150, y: GROUND_Y - 235, got: false },
-    { x: 3370, y: GROUND_Y - 155, got: false },
-    // Ground-level ideas
-    { x: 600,  y: GROUND_Y - 30, got: false },
-    { x: 1450, y: GROUND_Y - 30, got: false },
-    { x: 2320, y: GROUND_Y - 30, got: false },
+    // Section A
+    { x: 360,  y: GROUND_Y - 165, got: false },
+    { x: 540,  y: GROUND_Y - 175, got: false },
+    { x: 720,  y: GROUND_Y - 165, got: false },
+    // Section B
+    { x: 1060, y: GROUND_Y - 170, got: false },
+    { x: 1240, y: GROUND_Y - 185, got: false },
+    { x: 1420, y: GROUND_Y - 170, got: false },
+    // Section C
+    { x: 1760, y: GROUND_Y - 165, got: false },
+    { x: 1940, y: GROUND_Y - 175, got: false },
+    { x: 2120, y: GROUND_Y - 165, got: false },
+    // Section D
+    { x: 2460, y: GROUND_Y - 170, got: false },
+    { x: 2640, y: GROUND_Y - 185, got: false },
+    { x: 2820, y: GROUND_Y - 170, got: false },
+    // Section E
+    { x: 3160, y: GROUND_Y - 165, got: false },
+    { x: 3340, y: GROUND_Y - 175, got: false },
   ];
 
-  // AI coins (speed boost)
+  // AI coins (speed boost) — one before each section, plus a refill partway
   coins = [
+    { x: 180,  y: GROUND_Y - 40, got: false },
     { x: 880,  y: GROUND_Y - 40, got: false },
-    { x: 1880, y: GROUND_Y - 40, got: false },
-    { x: 2780, y: GROUND_Y - 40, got: false },
+    { x: 1600, y: GROUND_Y - 40, got: false },
+    { x: 2300, y: GROUND_Y - 40, got: false },
+    { x: 3000, y: GROUND_Y - 40, got: false },
+    // Mid-section refills in case the boost runs low
+    { x: 1260, y: GROUND_Y - 40, got: false },
+    { x: 2640, y: GROUND_Y - 40, got: false },
   ];
 }
 
@@ -663,9 +675,11 @@ function update() {
   }
 
   const boosted = speedBoostTime > 0;
-  const maxSpeed = boosted ? 8.5 : 5;
-  const accel = boosted ? 0.9 : 0.5;
-  const jumpPower = boosted ? -13 : -11.5;
+  const maxSpeed = boosted ? 9 : 5;
+  const accel = boosted ? 0.95 : 0.5;
+  // Boosted jump (-15) reaches ~187px; normal jump (-11.5) reaches ~110px.
+  // All idea platforms sit between -130 and -150 so they're ONLY reachable when boosted.
+  const jumpPower = boosted ? -15 : -11.5;
 
   // Horizontal input
   if (keys['ArrowLeft'] || keys['KeyA']) {
